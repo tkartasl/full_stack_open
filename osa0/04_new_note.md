@@ -1,4 +1,3 @@
-```mermaid
 SequenceDiagram
   participant browser
   participant server
@@ -27,6 +26,4 @@ SequenceDiagram
   
   browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
   server-->>browser: returns JSON file
-  ```
-  ote: JSON file has notes as rawdata
-  ```
+  Note: JSON file has notes as rawdata
