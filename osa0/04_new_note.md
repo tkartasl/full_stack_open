@@ -1,3 +1,4 @@
+```mermaid
 SequenceDiagram
   participant browser
   participant server
@@ -33,3 +34,4 @@ SequenceDiagram
   server-->>browser: returns JSON file
   deactivate server
   Note right of browser: JSON file has notes as rawdata
+```
