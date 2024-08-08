@@ -5,10 +5,7 @@ sequenceDiagram
 
   browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note
   
-  Note right of browser: Data related to POST request is sent as body.
-  Server makes a request to retrieve the data.
-  Server adds the data to notes table.
-  Server responds with status 302
+  Note right of browser: Data related to POST request is sent as body. Server makes a request to retrieve the data. Server adds the data to notes table. Server responds with status 302
   
   browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
   activate server
