@@ -10,7 +10,7 @@ sequenceDiagram
   That function makes the POST request and defines content type as JSON.
   
   activate server
-  server-->>borwser: Status 201
+  server-->>browser: Status 201
   deactivate server
   ```
   
