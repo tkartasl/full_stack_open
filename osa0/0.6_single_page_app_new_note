@@ -1,0 +1,16 @@
+```mermaid
+sequenceDiagram
+  participant browser
+  participant server
+
+  browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/spa
+  Note right of browser: Sending the form information is done by JavaScript code in spa.js file.
+  Code get's the form-element and gives it an eventhandler that gets called when form is submitted.
+  Then the code creates a new note and adds it to the notes list and calls a function that makes that sends the information to server.
+  That function makes the POST request and defines content type as JSON.
+  
+  activate server
+  server-->>borwser: Status 201
+  deactivate server
+  ```
+  
