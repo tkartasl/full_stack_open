@@ -1,11 +1,10 @@
 const Total = ({ parts }) => {
-	let total = 0
-	for (let i = 0; i < parts.length; i++)
-		total += parts[i].exercises
-	
+	const totalExercises = parts.reduce(
+		(previousValue, currentValue) => previousValue + currentValue.exercises, 0
+);
 	return (
 		<div>
-			<h4>total of {total} exercises</h4>
+			<h4>total of {totalExercises} exercises</h4>
 		</div>
 	)
 }
