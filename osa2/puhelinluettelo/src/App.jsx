@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
+import personService from './services/persons'
 
 const Filter = (props) => {
 	return (
@@ -29,29 +31,25 @@ const PersonForm = (props) => {
 	)
 }
 
-const Persons = ( { filter, persons}) => {
-
-	const personsToShow = filter === '' ? persons : persons.filter(person => person.name.toLowerCase().includes(filter))
-	return (
-		<ul>
-			{personsToShow.map(person =>
-			<p key={person.name}> {person.name} {person.number} </p>
-			)}
-   		</ul>
-	)
+const Persons = ({ name, number, deletePerson }) => {
+  return (
+	<p>
+		{name} {number} <button onClick={deletePerson}>delete</button> 
+   	</p>
+  )
 }
 
-
 const App = () => {
-	const [persons, setPersons] = useState([
-	  { name: 'Arto Hellas', number: '040-123456' },
-	  { name: 'Ada Lovelace', number: '39-44-5323523' },
-	  { name: 'Dan Abramov', number: '12-43-234345' },
-	  { name: 'Mary Poppendieck', number: '39-23-6423122' }
-	])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+
+  useEffect(() => {
+	personService
+		.getAll()
+		.then(response => setPersons(response))
+  }, [])
 
   const	addPerson = (event) => {
 	event.preventDefault()
@@ -64,10 +62,24 @@ const App = () => {
 		window.alert(`${newName} is already added to phonebook`)
 	else
 	{
-		setPersons(persons.concat(phonebookObject))
+		personService
+			.create(phonebookObject)
+			.then(response => {
+				setPersons(persons.concat(response))
 		setNewName('')
 		setNewNumber('')
+		})
 	}
+  }
+  const personsToShow = newFilter === '' ? persons : persons.filter(person => person.name.toLowerCase().includes(newFilter))
+
+  const deleteThisPerson = (person) => {
+	window.confirm(`Delete ${person.name} ?`)
+	personService
+		.remove(person.id)
+		.then(response => {
+			setPersons(persons.filter(n => n.name !== person.name))
+  		})
   }
 
   const addFilter = (event) => {
@@ -87,10 +99,18 @@ const App = () => {
 	  <PersonForm name={newName} number={newNumber} add={addPerson}
 	  nameChange={handleNameChange} numberChange={handleNumberChange} />
       <h3>Numbers</h3>
-	  <Persons filter={newFilter} persons={persons} />
-    </div>
-  )
+	  <ul>
+	 	{personsToShow.map(person =>
+	    <Persons 
+		  key={person.name}
+		  name={person.name}
+		  number={person.number}
+		  deletePerson={() => deleteThisPerson(person)}
+	    />
+	  )}
+	  </ul>
+   </div>
 
-}
+)}
 
 export default App
