@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
-//import './index.css'
 
 const Filter = (props) => {
 	return (
