@@ -1,3 +1,34 @@
 {
-  "persons": []
+  "persons": [
+    {
+      "id": "2447",
+      "name": "Aku Ankka",
+      "number": "99 3131313"
+    },
+    {
+      "id": "3eee",
+      "name": "Arto Hellas",
+      "number": "04040404"
+    },
+    {
+      "id": "7e23",
+      "name": "Mikki Hiiri",
+      "number": "8989"
+    },
+    {
+      "id": "491a",
+      "name": "Tomppa",
+      "number": "9494"
+    },
+    {
+      "id": "bb68",
+      "name": "Tupu",
+      "number": "050 9090"
+    },
+    {
+      "id": "79fb",
+      "name": "Hupu",
+      "number": "3902303"
+    }
+  ]
 }
