@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
+import './index.css'
 
 const Filter = (props) => {
 	return (
@@ -38,11 +39,29 @@ const Persons = ({ name, number, deletePerson }) => {
   )
 }
 
-const Notification = ({ message, style }) => {
+const Notification = ({ message }) => {
 	if (message === null)
-		return (null)
+	{
+		return null
+	}
+
 	return (
-		<div style={style}>{message}</div>
+		<div className='notification'>
+			{message}
+		</div>
+	)
+}
+
+const Error = ({ message }) => {
+	if (message === null)
+	{
+		return null
+	}
+
+	return (
+		<div className='error'>
+			{message}
+		</div>
 	)
 }
 
@@ -51,16 +70,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
-  const [newNotification, setNotification] = useState('')
-  const [newStyle, setStyle] = useState({})
-
-  const notificationStyle = {
-	color: 'green',
-	backgroundColor: 'lightgrey',
-	fontSize: 18,
-	padding: 10,
-	border: '2px solid green'
-  }
+  const [newNotification, setNotification] = useState(null)
+  const [newError, setError] = useState(null)
 
   useEffect(() => {
 	personService
@@ -68,31 +79,27 @@ const App = () => {
 		.then(response => setPersons(response))
   }, [])
 
-  const showNotification = (message) => {
-	setNotification(message)
-	setStyle(notificationStyle)
-	setTimeout(() => {
-		setNotification(null)
-		setStyle(null)
-	}, 4000)
-}
-
   const updatePerson = (person) => {
 	const changedPerson = { ...person, number: newNumber }
 	personService
-	.update(changedPerson, person.id)
-	.then(response => {
-		setPersons(persons.map(p => p.id !== person.id ? p : response))
-		setNewName('')
-		setNewNumber('')
-		showNotification(`Updated contact ${person.name}`)
-	})
-	.catch(error => {
-		alert(
-			`the person '${person.name}' was already deleted from server`
-		)
-		setPersons(persons.filter(n => n.id !== person.id))
-	})
+		.update(changedPerson, person.id)
+		.then(response => {
+			setNotification(`Updated contact ${person.name}`)
+			setTimeout(() => {
+				setNotification(null)
+			}, 4000)
+			setPersons(persons.map(p => p.id !== person.id ? p : response))
+		})
+		.catch(error => {
+			
+			setError(`the person '${person.name}' was already deleted from server`)
+			setTimeout(() => {
+				setError(null)
+			}, 4000)
+			setPersons(persons.filter(n => n.id !== person.id))
+		})
+	setNewName('')
+	setNewNumber('')
   }
 
   const addPerson = () => {
@@ -103,10 +110,13 @@ const App = () => {
 	personService
 		.create(phonebookObject)
 		.then(response => {
+			setNotification(`Added ${newName}`)
+			setTimeout(() => {
+				setNotification(null)
+			}, 4000)
 			setPersons(persons.concat(response))
 			setNewName('')
 			setNewNumber('')
-			showNotification(`Added ${newName}`)
 	})
   }
 
@@ -129,8 +139,11 @@ const App = () => {
 		personService
 			.remove(person.id)
 			.then(response => {
-				showNotification(`Deleted ${person.name}`)
 				setPersons(persons.filter(n => n.id !== person.id))
+				setNotification(`Deleted ${person.name}`)
+				setTimeout(() => {
+					setNotification(null)
+				}, 4000)
 			})
 	}
   }
@@ -148,8 +161,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-	  <Notification message={newNotification} style={newStyle} />
-	  <br />
+	  <Notification message={newNotification} />
+	  <Error message={newError} />
 	  <Filter add={addFilter} filter={newFilter} change={handleFilterChange} />
 	  <h3>add a new</h3>
 	  <PersonForm name={newName} number={newNumber} add={handlePersonChange}
