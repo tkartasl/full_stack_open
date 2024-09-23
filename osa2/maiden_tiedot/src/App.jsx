@@ -11,43 +11,49 @@ const Filter = (props) => {
 	)
 }
 
+const ShowCountry = ({ country }) => {
+	return (
+		<div>
+			<h2>{country.name.common}</h2>
+			<p>capital {country.capital}</p>
+			<p>area {country.area}</p>
+			<h4>languages:</h4>
+			<ul>
+				{Object.entries(country.languages).map(([code, language]) => (
+					<li key={code}>{language}</li>
+				))}
+				</ul>
+			 <img src={country.flags.png}></img>
+		</div>
+	)
+}
+
 const ListCountries = ({ countries, len }) => {
+	const [selected, setSelected] = useState(null)
+
 	if (len > 10)
-	{
-		return (<p>Too many matches, specify another filter</p>)
-	}
+		return <p>Too many matches, specify another filter</p>
 	else if (len === 1)
-	{
-		return (
-			<div>
-				<h2>{countries[0].name.common}</h2>
-				<p>capital {countries[0].capital}</p>
-				<p>area {countries[0].area}</p>
-				<h4>languages:</h4>
-			    <ul>
-					{Object.entries(countries[0].languages).map(([code, language]) => (
-						<li key={code}>{language}</li>
-					))}
-   				 </ul>
-				 <img src={countries[0].flags.png}></img>
-			</div>
-		)
-	}
+		return <ShowCountry country={countries[0]} />
 	else
 	{
 		return (
 			<div>
-			{countries.map((country) => (
-				<p key={country.cca3}>{country.name.common}</p>
-			)
-			)}
+				{countries.map((country) => (
+					<p key={country.cca3}>{country.name.common}
+					<button onClick={() => setSelected(country)}>show</button>
+					</p>
+				)
+				)}
+				{selected && (
+					<ShowCountry country={selected} />
+				)}
 			</div>
 		)
 	}
 }
 
 const App = () => {
-	const [value, setValue] = useState('')
 	const [filter, setFilter] = useState(null)
 	const [countries, setCountries] = useState([])
 
@@ -77,7 +83,7 @@ const App = () => {
 	return (
 		<div>
 			<Filter add={addFilter} filter={filter} change={handleChange} />
-			<ListCountries countries={countriesToShow} len={countriesToShow.length} />
+			<ListCountries countries={countriesToShow} len={countriesToShow.length} set={setCountries} />
 		</div>
 	)
 }
