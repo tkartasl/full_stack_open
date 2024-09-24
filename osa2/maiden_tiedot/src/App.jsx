@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import axios from 'axios'
+const api_key = import.meta.env.VITE_SOME_KEY
 
 const Filter = (props) => {
 	return (
@@ -11,7 +12,22 @@ const Filter = (props) => {
 	)
 }
 
-const ShowCountry = ({ country }) => {
+const ShowCountry = ({ country, weather, set }) => {
+	const lat = country.latlng[0]
+	const lon = country.latlng[1]
+
+	useEffect(() => {
+		if (weather)
+		{
+			axios
+				.get(`https://api.openweathermap.org/data/2.5/weather?units=metric&lat=${lat}&lon=${lon}&appid=${api_key}`)
+				.then(response => {
+					set(response.data)
+				})
+		}
+		}, [lat, lon])
+	const iconSource = `https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`
+
 	return (
 		<div>
 			<h2>{country.name.common}</h2>
@@ -22,31 +38,34 @@ const ShowCountry = ({ country }) => {
 				{Object.entries(country.languages).map(([code, language]) => (
 					<li key={code}>{language}</li>
 				))}
-				</ul>
-			 <img src={country.flags.png}></img>
+			</ul>
+			<img src={country.flags.png}></img>
+			<h3>Weather in {country.capital}</h3>
+			<p>temperature {weather.main.temp} Celsius</p>
+			<img src={iconSource}></img>
+			<p>wind {weather.wind.speed} m/s</p>
 		</div>
 	)
 }
 
-const ListCountries = ({ countries, len }) => {
-	const [selected, setSelected] = useState(null)
+const ListCountries = (props) => {
 
-	if (len > 10)
+	if (props.len > 10)
 		return <p>Too many matches, specify another filter</p>
-	else if (len === 1)
-		return <ShowCountry country={countries[0]} />
+	else if (props.len === 1)
+		return <ShowCountry country={props.countries[0]} weather={props.weather} set={props.setWeather} />
 	else
 	{
 		return (
 			<div>
-				{countries.map((country) => (
+				{props.countries.map((country) => (
 					<p key={country.cca3}>{country.name.common}
-					<button onClick={() => setSelected(country)}>show</button>
+					<button onClick={() => props.set(country)}>show</button>
 					</p>
 				)
 				)}
-				{selected && (
-					<ShowCountry country={selected} />
+				{props.selected && (
+					<ShowCountry country={props.selected} weather={props.weather} set={props.setWeather} />
 				)}
 			</div>
 		)
@@ -56,6 +75,8 @@ const ListCountries = ({ countries, len }) => {
 const App = () => {
 	const [filter, setFilter] = useState(null)
 	const [countries, setCountries] = useState([])
+	const [selected, setSelected] = useState(null)
+	const [weather, setWeather] = useState([])
 
 	useEffect(() => {
 		if (countries)
@@ -70,6 +91,7 @@ const App = () => {
 
 	const handleChange = (event) => {
 		setFilter(event.target.value)
+		setSelected(null)
 	}
 
 	const addFilter = (event) => {
@@ -78,12 +100,12 @@ const App = () => {
 	}
 
 	const countriesToShow = filter === '' ? [] : countries.filter(country => country.name.common.toLowerCase().includes(filter))
-	console.log('Countries to show', countriesToShow)
-	console.log('Countries to show length', countriesToShow.length)
 	return (
 		<div>
 			<Filter add={addFilter} filter={filter} change={handleChange} />
-			<ListCountries countries={countriesToShow} len={countriesToShow.length} set={setCountries} />
+			<ListCountries countries={countriesToShow} len={countriesToShow.length}
+			set={setSelected} selected={selected}
+			weather={weather} setWeather={setWeather} />
 		</div>
 	)
 }
